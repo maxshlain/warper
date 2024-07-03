@@ -1,7 +1,29 @@
 """ Streamlit app for running a ping command to a destination address. """
 
 import streamlit as st
-from ping_utils import run_ping
+import subprocess
+import platform
+
+
+def run_ping(host, output_area):
+    """
+    Runs ping command and updates output area in real-time
+    """
+    param = "-n" if platform.system().lower() == "windows" else "-c"
+    command = ["ping", param, "14", host]
+
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+
+    output = ""
+    for line in process.stdout:
+        output += line
+        output_area.text_area("Console Output", value=output, height=200)
+
+    print(f"Process return code: {process.returncode}")
+
+    return True
 
 
 def main():
@@ -15,7 +37,7 @@ def main():
     if st.button("Run Ping"):
         if destination_address:
             status = st.warning(f"Pinging {destination_address}...")
-            console_output.text_area("Console Output", value="", height=400)
+            console_output.text_area("Console Output", value="", height=200)
             success = run_ping(destination_address, console_output)
 
             if success:
