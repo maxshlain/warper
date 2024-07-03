@@ -19,7 +19,14 @@ def run_ping(host, output_area):
     output = ""
     for line in process.stdout:
         output += line
-        output_area.text_area("Console Output", value=output, height=200)
+
+        # last 10 lines
+        rendered_output = output.split("\n")[-10:]
+        rendered_output = "\n".join(rendered_output)
+
+        output_area.markdown(
+            f"``` bash\n{rendered_output}\n```"
+        )
 
     print(f"Process return code: {process.returncode}")
 
